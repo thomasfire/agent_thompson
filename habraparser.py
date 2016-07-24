@@ -48,15 +48,15 @@ def delpoll(text):
 
 def deletetrash(texthtml,num):
 	arttext = Document(texthtml).short_title()+'\n\n'+Document(texthtml).summary()
-	
-	arttext=removetags(arttext)
+
+
 	listofimg=findimg(arttext)
 	a=re.compile(r"""<img.*?src=".+?".*?>""", re.DOTALL)
-	arttext=re.sub(a," ",arttext)
+	arttext=re.sub(a,"",arttext)
 
 	b=re.compile(r"""href="(.*?)">""", re.DOTALL)
 	listoflinks=re.findall(b,arttext)
-	arttext=re.sub(b," ",arttext)
+	arttext=re.sub(b,"",arttext)
 
 	f=open(num+".images","w")
 	f.write("\n".join(listofimg))
@@ -66,8 +66,9 @@ def deletetrash(texthtml,num):
 	g.write("\n".join(listoflinks))
 	g.close()
 	arttext=videolink(arttext)
-	
-	
+
+	arttext=removetags(arttext)
+
 	#print(arttext)
 	return arttext
 
@@ -90,10 +91,8 @@ def formatext(lines):
 
 
 def download_images(num):
-	f=open(num+".images","r")
+	f=open(num+'/'+num+".images","r")
 	img_urls=f.read().split()
-	if not path.exists(num):
-		mkdir(num)
 	for x in img_urls:
 		st=" ".join(list(re.findall(r"\w+?/(\w+?\.\w{3})",x)))
 		if not st:
@@ -118,7 +117,9 @@ def main(resource):
 	g=open(num+".parsed","w")
 	g.write(formatext(lines))
 	g.close()
-	download_images(num)
+	#download_images(num)
+	if not path.exists(num):
+		mkdir(num)
 	shmove(num+".parsed", num+'/'+num+".parsed")
 	shmove(num+".images", num+'/'+num+".images")
 	shmove(num+".links", num+'/'+num+".links")

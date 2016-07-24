@@ -10,6 +10,7 @@
 from os import listdir
 import re
 from tlapi import getchoice
+from habraparser import download_images
 
 def loadkeys():
 	f=open(".keywords","r")
@@ -73,6 +74,10 @@ def main(resource,tlurl,lastid):
 	print(seq)
 	if seq:
 		seq,lastid=getchoice(tlurl,seq,lastid)
+
+	for x in seq:
+		download_images(str(x))
+
 	f.write('\n'.join(seq))
 	f.close()
 	addtags(seq)
