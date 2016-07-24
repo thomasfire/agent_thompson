@@ -25,11 +25,16 @@ def geturl(password):
 #sends a message to Telegram
 def sendmsg(url,chatid,text):
 	ntextparted=[]
-	for x in range(int(len(text)/2048)):
-		if (x+1)*2048<len(text):
-			ntextparted.append(quote(text[x*2048:(x+1)*2048].encode('utf-8')))
-		else:
-			ntextparted.append(quote(text[x*2048:].encode('utf-8')))
+	
+	if len(text)>2048:
+		for x in range(int(len(text)/2048)):
+			if (x+1)*2048<len(text):
+				ntextparted.append(quote(text[x*2048:(x+1)*2048].encode('utf-8')))
+			else:
+				ntextparted.append(quote(text[x*2048:].encode('utf-8')))
+	else:
+		ntextparted.append(quote(text.encode('utf-8')))
+
 	for x in ntextparted:
 		try:
 			requ=urlget(url+'sendMessage?chat_id='+str(chatid)+'&text='+x)
@@ -126,7 +131,7 @@ def getchoice(url,listofart,offset=0):
 			for y in listofmsgs[-10:]:
 				currmsg=y.split(' :: ')
 				if currmsg[1] in odmins and currmsg[0] not in maden and currmsg[3][:4]=='/art':
-					if currmsg[3][4:].strip()=='none':
+					if currmsg[3][4:].strip().strip(';').strip()=='none':
 						f=open('files/tl_msgs.made','a')
 						f.write(' '+currmsg[0])
 						f.close()
