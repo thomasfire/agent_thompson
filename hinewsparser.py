@@ -7,7 +7,6 @@
 ###Sponsored by academylab.ru
 """
 
-
 import urllib
 import urllib.request
 import re
@@ -22,7 +21,7 @@ def removetags(somestrin):
 	tags=fg.read().split()
 	fg.close()
 	for x in tags:
-		somestrin=somestrin.replace(x,"")
+		somestrin=somestrin.replace(x," ")
 	return somestrin
 
 
@@ -47,6 +46,13 @@ def delpoll(text):
 		text=text.replace(x,'')
 	return text
 
+def delete_span(text):
+	a=re.compile(r"""(<span id="more-\d+?"/>)""",re.DOTALL)
+	for x in re.findall(a,text):
+		text=text.replace(x,'')
+	return text
+
+
 def deletetrash(texthtml,num):
 	arttext = Document(texthtml).short_title()+'\n\n'+Document(texthtml).summary()
 
@@ -67,6 +73,7 @@ def deletetrash(texthtml,num):
 	g.write("\n".join(listoflinks))
 	g.close()
 	arttext=videolink(arttext)
+	arttext=delete_span(arttext)
 
 	arttext=removetags(arttext)
 
@@ -104,8 +111,9 @@ def main(resource):
 
 	f=urllib.request.urlopen(resource)
 	toparse=str(f.read(),encoding='utf8')
-	a=re.compile(r"""/(\d+?)/""")
+	a=re.compile(r"""/[A-Za-z0-9_-]+?/([A-Za-z0-9_-]+?).html""")
 	num=md5sum(" ".join(list(re.findall(a,resource))).encode('utf-8')).hexdigest()
+	print(num)
 	f.close()
 
 	g=open(num+".parsed","w")

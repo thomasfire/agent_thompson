@@ -13,10 +13,12 @@ import vkupload as vup
 import habraparser as hper
 import parsehabrlinks as phlinks
 import makeseq as mkseq
+import parsehinewslinks as parsehnl
+import hinewsparser as hinper
 from shutil import rmtree
 from time import sleep
 from random import randint
-from os import listdir 
+from os import listdir
 from logging import exception,basicConfig,WARNING,DEBUG
 from getpass import getpass
 
@@ -27,7 +29,7 @@ level = DEBUG, filename = 'logs/logs.log')
 
 def main():
 	psswd=gethash(getpass())
-	
+
 	resource=fdecrypt("files/vk.settings",psswd).split()[0]
 
 
@@ -54,6 +56,16 @@ def main():
 			sleep(30)
 			continue
 
+		try:
+			parsehnl.main()
+		except Exception as e:
+			print("Somethings wrong,maybe it's bad connection")
+			print("Retrying in 30 seconds...")
+			exception(e)
+			sleep(30)
+			continue
+
+
 		#refreshing links list
 		f=open('files/'+resource+".links",'r')
 		links=f.read().split()
@@ -70,8 +82,25 @@ def main():
 			sleep(30)
 			continue
 
+		#refreshing links list
+		f=open("files/hi-news.links",'r')
+		hinewslinks=f.read().split()
+		f.close()
+
+		#downloading all articles
+		try:
+			for x in links:
+				hinper.main(x)
+		except Exception as e:
+			print("Somethings wrong,maybe it's bad connection")
+			print("Retrying in 30 seconds...")
+			exception(e)
+			sleep(30)
+			continue
+
 		#making sequence what to post to VK
 		lastid=mkseq.makeseq(resource,url,lastid)
+
 		#uploading to VK
 		vup.startuploading(psswd,resource)
 
