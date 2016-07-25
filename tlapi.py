@@ -1,11 +1,11 @@
 #!/usr/bin/python3
 # -*- coding: utf-8 -*-
 
-#this is API for bot in Telegram
+#this is API for bot in Telegram. See https://core.telegram.org/bots/api for detailed information
 """
-###Author: Thomas Fire; URL: https://github.com/thomasfire;
-###Author Telegram: @Thomas_Fire;
-###Sponsored by academylab.ru
+### Author: Thomas Fire; URL: https://github.com/thomasfire;
+### Author Telegram: @Thomas_Fire;
+### Sponsored by academylab.ru
 """
 
 from requests  import get as urlget
@@ -16,6 +16,9 @@ from urllib.parse import quote, urlsplit, urlunsplit
 
 
 #url of api Telegram
+'''
+password - password that files encrypted with. In my case it is sha256sum of string
+'''
 def geturl(password):
 	url=('https://api.telegram.org/bot'+
 	fdecrypt('files/telegram.token',password).split()[0].replace('token=','').replace(';','')+'/')
@@ -23,9 +26,14 @@ def geturl(password):
 
 
 #sends a message to Telegram
+'''
+url - 'https://api.telegram.org/bot<token>/', where <token> is token, given by FatherBot or another bot
+chatid - chat`s id, where to send
+text - what should be sent
+'''
 def sendmsg(url,chatid,text):
 	ntextparted=[]
-	
+
 	if len(text)>2048:
 		for x in range(int(len(text)/2048)):
 			if (x+1)*2048<len(text):
@@ -44,11 +52,15 @@ def sendmsg(url,chatid,text):
 			return 'error'
 
 
-	return 
+	return
 
 
 
-#gets and logs to file new messages
+#gets and logs new messages to file
+'''
+url - 'https://api.telegram.org/bot<token>/', where <token> is token, given by FatherBot or another bot
+offset - id of last update. Needs for optimization
+'''
 def getmsg(url,offset=0):
 	try:
 		requ=urlget(url+'getUpdates'+'?offset='+str(offset)).json()
@@ -77,12 +89,6 @@ def getmsg(url,offset=0):
 	return 0
 
 
-def kickuser(userid):
-	f=open('files/shitlist.db','a')
-	f.write(' '+str(userid))
-	f.close()
-
-
 #cleans up logs to make them small
 def cleanup():
 	f=open('files/tl_msgs.db','r')
@@ -102,7 +108,12 @@ def cleanup():
 		f.close()
 
 
-#sending list of articles 
+#getting choice of what to send to VK
+'''
+url - 'https://api.telegram.org/bot<token>/', where <token> is token, given by FatherBot or another bot
+listofart - list of candidate arts
+offset - id of last update. Needs for optimization
+'''
 def getchoice(url,listofart,offset=0):
 	f=open('files/admins.db','r')
 	odmins=f.read().strip().split()
