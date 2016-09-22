@@ -113,7 +113,6 @@ def main(resource):
 	toparse=str(f.read(),encoding='utf8')
 	a=re.compile(r"""/[A-Za-z0-9_-]+?/([A-Za-z0-9_-]+?).html""")
 	num=md5sum(" ".join(list(re.findall(a,resource))).encode('utf-8')).hexdigest()
-	print(num)
 	f.close()
 
 	g=open(num+".parsed","w")
